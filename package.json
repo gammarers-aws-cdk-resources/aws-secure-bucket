@@ -1,5 +1,5 @@
 {
-  "name": "@gammarers/aws-secure-bucket",
+  "name": "aws-secure-bucket",
   "description": "This is a Simple S3 Secure Bucket.",
   "repository": {
     "type": "git",

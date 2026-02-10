@@ -7,7 +7,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
   jsiiVersion: '5.9.x',
   typescriptVersion: '5.9.x',
   defaultReleaseBranch: 'main',
-  name: '@gammarers/aws-secure-bucket',
+  name: 'aws-secure-bucket',
   description: 'This is a Simple S3 Secure Bucket.',
   projenrcTs: true,
   repositoryUrl: 'https://github.com/gammarers/aws-secure-bucket.git',
