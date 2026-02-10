@@ -27,13 +27,13 @@ const project = new awscdk.AwsCdkConstructLibrary({
     secret: 'GITHUB_TOKEN',
     allowedUsernames: ['yicr'],
   },
-  publishToPypi: {
-    distName: 'gammarers.aws-secure-bucket',
-    module: 'gammarers.aws_secure_bucket',
-  },
-  publishToNuget: {
-    dotNetNamespace: 'Gammarers.CDK.AWS',
-    packageId: 'Gammarers.CDK.AWS.SecureBucket',
-  },
+  // publishToPypi: {
+  //   distName: 'gammarers.aws-secure-bucket',
+  //   module: 'gammarers.aws_secure_bucket',
+  // },
+  // publishToNuget: {
+  //   dotNetNamespace: 'Gammarers.CDK.AWS',
+  //   packageId: 'Gammarers.CDK.AWS.SecureBucket',
+  // },
 });
 project.synth();
