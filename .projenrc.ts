@@ -32,7 +32,6 @@ const project = new awscdk.AwsCdkConstructLibrary({
     }),
   },
   autoApproveOptions: {
-    secret: 'GITHUB_TOKEN',
     allowedUsernames: [
       'gammarers-projen-upgrade-bot[bot]',
       'yicr',
