@@ -15,7 +15,7 @@ describe('SecureBucket Default Parameters Testing', () => {
 
   const bucket = new SecureBucket(stack, 'SecureBucket');
 
-  it('Is Bucket', async () => {
+  it('Is Bucket', () => {
     expect(bucket).toBeInstanceOf(s3.Bucket);
   });
 
