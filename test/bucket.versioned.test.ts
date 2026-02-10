@@ -15,19 +15,19 @@ describe('SecureBucket Versioning Testing', () => {
       versioned: true,
     });
 
+    const template = Template.fromStack(stack);
+
     it('Is Bucket', () => {
       expect(bucket).toBeInstanceOf(s3.Bucket);
     });
 
-    it('Should versioning disabled', () => {
+    it('Should versioning enabled', () => {
       template.hasResourceProperties('AWS::S3::Bucket', {
         VersioningConfiguration: Match.objectEquals({
           Status: 'Enabled',
         }),
       });
     });
-
-    const template = Template.fromStack(stack);
 
     it('Should match snapshot', () => {
       expect(template.toJSON()).toMatchSnapshot('versioning-enable');
@@ -44,18 +44,18 @@ describe('SecureBucket Versioning Testing', () => {
       versioned: false,
     });
 
+    const template = Template.fromStack(stack);
+
     it('Is Bucket', () => {
       expect(bucket).toBeInstanceOf(s3.Bucket);
     });
 
-    it('Should versioning disabled(not definition property)', () => {
+    it('Should versioning disabled (no VersioningConfiguration)', () => {
       const resources = template.findResources('AWS::S3::Bucket');
       for (const resource of Object.values(resources)) {
         expect(resource.Properties).not.toHaveProperty('VersioningConfiguration');
       }
     });
-
-    const template = Template.fromStack(stack);
 
     it('Should match snapshot', () => {
       expect(template.toJSON()).toMatchSnapshot('versioning-disable');

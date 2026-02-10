@@ -4,82 +4,50 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 
 /**
- * @TODO: Not yet supported
- * https://github.com/aws/jsii/issues/4468
- * type omitKeys = 'publicReadAccess|enforceSSL|blockPublicAccess';
- * export interface CodePipelineStateChangeDetectionEventRuleProps extends Omit<s3.BucketProps, 'publicReadAccess'> {}
+ * Bucket type constants. Use these values for the {@link SecureBucketProps.bucketType} property.
  */
+export const SecureBucketType = {
+  /**
+   * Select when using this bucket as the CDK pipeline artifact bucket with a custom Qualifier
+   * (single-region or multi-region deployment).
+   */
+  DEPLOYMENT_PIPELINE_ARTIFACT_BUCKET: 'DeploymentPipelineArtifactBucket',
+  /**
+   * Select when using this bucket as the CloudFront origin.
+   */
+  CLOUDFRONT_ORIGIN_BUCKET: 'CloudFrontOriginBucket',
+  /**
+   * Select for the default bucket when not using a custom Qualifier.
+   */
+  DEFAULT_BUCKET: 'DefaultBucket',
+} as const;
 
-export enum SecureBucketType {
-  /**
-   * @deprecated This property is deprecated. Use the bucketType property instead.
-   */
-  SINGLE_PIPELINE_ARTIFACT = 'single-pipeline-artifact',
-  /**
-   * If you are setting a custom Qualifier and using it as the artifact bucket for the CDK pipeline, is it selected as the single region deployment pipeline artifact bucket.
-   */
-  SINGLE_REGION_DEPLOYMENT_PIPELINE_ARTIFACT_BUCKET = 'single-region-deployment-pipeline-artifact-bucket',
-  /**
-   * @deprecated This property is deprecated. Use the bucketType property instead.
-   */
-  MULTI_PIPELINE_ARTIFACT = 'multi-pipeline-artifact',
-  /**
-   * If you are setting a custom Qualifier and using it as the artifact bucket for the CDK pipeline, is it selected as the multi region deployment pipeline artifact bucket.
-   */
-  MULTI_REGION_DEPLOYMENT_PIPELINE_ARTIFACT_BUCKET = 'multi-region-deployment-pipeline-artifact-bucket',
-  /**
-   * If you are using it as the CloudFront origin bucket, is it selected as the cloudfront origin bucket.
-   * @deprecated This property is deprecated. Use the bucketType property instead.
-   */
-  CLOUD_FRONT_ORIGIN = 'cloudfront-origin',
-  /**
-   * If you are using it as the CloudFront origin bucket, is it selected as the cloudfront origin bucket.
-   */
-  CLOUD_FRONT_ORIGIN_BUCKET = 'cloudfront-origin-bucket',
-  /**
-   * If you are not setting a custom Qualifier and using it as the default bucket, is it selected as the default bucket.
-   * @deprecated This property is deprecated. Use the bucketType property instead.
-   */
-  DEFAULT = 'default',
-  /**
-   * If you are not setting a custom Qualifier and using it as the default bucket, is it selected as the default bucket.
-   */
-  DEFAULT_BUCKET = 'default-bucket',
-}
+/** Bucket type: one of the {@link SecureBucketType} constant values. */
+export type SecureBucketType = typeof SecureBucketType[keyof typeof SecureBucketType];
 
+/**
+ * Props for {@link SecureBucket}. Extends `s3.BucketProps` with a bucket type for secure defaults.
+ */
 export interface SecureBucketProps extends s3.BucketProps {
 
   /**
-   * If you are setting a custom Qualifier and using it as the artifact bucket for the CDK pipeline, set it to true.
-   * @deprecated This property is deprecated. Use the bucketType property instead.
-   * @default false
-   */
-  readonly isPipelineArtifactBucket?: boolean;
-
-  /**
-   * If your are using it as the CloudFront origin bucket, set it to true.
-   * @deprecated This property is deprecated. Use the bucketType property instead.
-   * @default false
-   */
-  readonly isCloudFrontOriginBucket?: boolean;
-
-  /**
-   * The type of the bucket.
-   * @default SecureBucketType.DEFAULT
+   * The type of the bucket. Determines encryption and resource policy behavior.
+   * @default SecureBucketType.DEFAULT_BUCKET
    */
   readonly bucketType?: SecureBucketType;
 }
 
+/**
+ * An S3 bucket with secure defaults: private access, SSL enforced, public access blocked, and encryption required.
+ */
 export class SecureBucket extends s3.Bucket {
   constructor(scope: Construct, id: string, props?: SecureBucketProps) {
-    const bucketType = props?.bucketType || SecureBucketType.DEFAULT;
+    const bucketType = props?.bucketType || SecureBucketType.DEFAULT_BUCKET;
     super(scope, id, {
       ...props,
       removalPolicy: RemovalPolicy.RETAIN,
-      // encryption: props?.encryption || s3.BucketEncryption.KMS_MANAGED,
       encryption: (() => {
-        if (props?.isCloudFrontOriginBucket === true
-          || (bucketType === SecureBucketType.CLOUD_FRONT_ORIGIN || bucketType === SecureBucketType.CLOUD_FRONT_ORIGIN_BUCKET)) {
+        if (bucketType === SecureBucketType.CLOUDFRONT_ORIGIN_BUCKET) {
           return s3.BucketEncryption.S3_MANAGED;
         }
         return props?.encryption || s3.BucketEncryption.KMS_MANAGED;
@@ -103,29 +71,19 @@ export class SecureBucket extends s3.Bucket {
       })(),
     });
 
-    // Get CfnBucket
     const cfnBucket = this.node.defaultChild as s3.CfnBucket;
     if (props?.eventBridgeEnabled === true) {
       cfnBucket.addPropertyOverride('NotificationConfiguration.EventBridgeConfiguration.EventBridgeEnabled', true);
     }
 
-    // 👇 Get account & region
     const account = Stack.of(this).account;
     const region = Stack.of(this).region;
 
-    if (props?.isPipelineArtifactBucket
-      || bucketType === SecureBucketType.SINGLE_PIPELINE_ARTIFACT
-      || bucketType === SecureBucketType.MULTI_PIPELINE_ARTIFACT
-      || bucketType === SecureBucketType.SINGLE_REGION_DEPLOYMENT_PIPELINE_ARTIFACT_BUCKET
-      || bucketType === SecureBucketType.MULTI_REGION_DEPLOYMENT_PIPELINE_ARTIFACT_BUCKET) {
+    if (bucketType === SecureBucketType.DEPLOYMENT_PIPELINE_ARTIFACT_BUCKET) {
 
-      // 👇 Get qualifier
-      // const qualifier = Stack.of(this).synthesizer.bootstrapQualifier || defaultQualifier;
       const qualifier = Stack.of(this).synthesizer.bootstrapQualifier;
 
-      // add resource policy when custom qualifier
       if (qualifier && (qualifier != DefaultStackSynthesizer.DEFAULT_QUALIFIER)) {
-
         this.addToResourcePolicy(new iam.PolicyStatement({
           actions: [
             's3:*',

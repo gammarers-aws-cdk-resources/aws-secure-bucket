@@ -1,7 +1,7 @@
 import { App, DefaultStackSynthesizer, Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { SecureBucket } from '../src';
+import { SecureBucket, SecureBucketType } from '../src';
 
 describe('SecureBucket Props Specific Testing', () => {
 
@@ -15,7 +15,7 @@ describe('SecureBucket Props Specific Testing', () => {
 
   const bucket = new SecureBucket(stack, 'SecureBucket', {
     bucketName: 'example-secure-bucket',
-    isPipelineArtifactBucket: true,
+    bucketType: SecureBucketType.DEPLOYMENT_PIPELINE_ARTIFACT_BUCKET,
   });
 
   it('Is Bucket', () => {
@@ -24,7 +24,7 @@ describe('SecureBucket Props Specific Testing', () => {
 
   const template = Template.fromStack(stack);
 
-  it('Should have bucket policy (is pipeline artifact bucket & custom qualifier defined)', () => {
+  it('Should have bucket policy when bucketType is pipeline artifact and custom qualifier is defined', () => {
     template.hasResourceProperties('AWS::S3::BucketPolicy', {
       Bucket: Match.objectEquals({
         Ref: Match.stringLikeRegexp('SecureBucket'),
