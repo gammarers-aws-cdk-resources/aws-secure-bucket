@@ -22,7 +22,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: 22.x
+          node-version: 24.x
       - name: Install dependencies
         run: yarn install --check-files
       - name: build
@@ -104,7 +104,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v5
         with:
-          node-version: 22.x
+          node-version: 24.x
       - name: Download build artifacts
         uses: actions/download-artifact@v5
         with:
