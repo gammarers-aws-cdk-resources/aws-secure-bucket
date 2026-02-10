@@ -25,7 +25,10 @@ const project = new awscdk.AwsCdkConstructLibrary({
   },
   autoApproveOptions: {
     secret: 'GITHUB_TOKEN',
-    allowedUsernames: ['yicr'],
+    allowedUsernames: [
+      'gammarers-projen-upgrade-bot[bot]',
+      'yicr',
+    ],
   },
   // publishToPypi: {
   //   distName: 'gammarers.aws-secure-bucket',
