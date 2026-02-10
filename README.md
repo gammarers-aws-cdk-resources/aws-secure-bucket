@@ -2,12 +2,9 @@
 
 [![GitHub](https://img.shields.io/github/license/gammarers/aws-secure-bucket?style=flat-square)](https://github.com/gammarers/aws-secure-bucket/blob/main/LICENSE)
 [![npm (scoped)](https://img.shields.io/npm/v/@gammarers/aws-secure-bucket?style=flat-square)](https://www.npmjs.com/package/@gammarers/aws-secure-bucket)
-[![PyPI](https://img.shields.io/pypi/v/gammarers.aws-secure-bucket?style=flat-square)](https://pypi.org/project/gammarers.aws-secure-bucket/)
-[![Nuget](https://img.shields.io/nuget/v/Gammarers.CDK.AWS.SecureBucket?style=flat-square)](https://www.nuget.org/packages/Gammarers.CDK.AWS.SecureBucket/)
 [![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/gammarers/aws-secure-bucket/release.yml?branch=main&label=release&style=flat-square)](https://github.com/gammarers/aws-secure-bucket/actions/workflows/release.yml)
 [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/gammarers/aws-secure-bucket?sort=semver&style=flat-square)](https://github.com/gammarers/aws-secure-bucket/releases)
 
-[![View on Construct Hub](https://constructs.dev/badge?package=@gammarers/aws-secure-bucket)](https://constructs.dev/packages/@gammarers/aws-secure-bucket)
 
 This is a Simple S3 Secure Bucket.
 
@@ -21,36 +18,22 @@ This is a Simple S3 Secure Bucket.
 
 | **Name** | **Type** | **Default** | **Description** |
 | --- | --- | --- | --- |
-| bucketType | SecureBucketType | SecureBucketType.DEFAULT_BUCKET | The type of the bucket.<br/> Available types: DEFAULT(⚠️ **Deprecated**: Use bucketType property instead.), <br/>SINGLE_PIPELINE_ARTIFACT(⚠️ **Deprecated**: Use bucketType property instead.), <br/>MULTI_PIPELINE_ARTIFACT(⚠️ **Deprecated**: Use bucketType property instead.), <br/>CLOUD_FRONT_ORIGIN(⚠️ **Deprecated**: Use bucketType property instead.), <br/>The type of the bucket. <br/>Available types: DEFAULT_BUCKET, <br/>SINGLE_REGION_DEPLOYMENT_PIPELINE_ARTIFACT_BUCKET, <br/>MULTI_REGION_DEPLOYMENT_PIPELINE_ARTIFACT_BUCKET, <br/>CLOUD_FRONT_ORIGIN_BUCKET |
-| isPipelineArtifactBucket | boolean | false | ⚠️ **Deprecated**: Use bucketType property instead. If you are setting a custom Qualifier and using it as the artifact bucket for the CDK pipeline, set it to true. |
-| isCloudFrontOriginBucket | boolean | false | ⚠️ **Deprecated**: Use bucketType property instead. If you are using it as the CloudFront origin bucket, set it to true. |
+| bucketType | SecureBucketType | SecureBucketType.DEFAULT_BUCKET | The type of the bucket. Available types: DEFAULT_BUCKET, DEPLOYMENT_PIPELINE_ARTIFACT_BUCKET, CLOUDFRONT_ORIGIN_BUCKET |
 
 ## Install
 
 ### TypeScript
 
-#### install by npm
+**npm:**
 
 ```shell
 npm install @gammarers/aws-secure-bucket
 ```
 
-#### install by yarn
+**yarn:**
 
 ```shell
 yarn add @gammarers/aws-secure-bucket
-```
-
-### Python
-
-```shell
-pip install gammarers.aws-secure-bucket
-```
-
-### C# / .Net
-
-```shell
-dotnet add package Gammarers.CDK.AWS.SecureBucket
 ```
 
 ## Example
