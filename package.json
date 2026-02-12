@@ -1,6 +1,6 @@
 {
   "name": "aws-secure-bucket",
-  "description": "This is a Simple S3 Secure Bucket.",
+  "description": "An AWS CDK construct that defines an S3 bucket with security-focused defaults. It wraps the standard s3.Bucket and applies settings that follow AWS best practices, so you can create buckets without accidentally leaving them open or unencrypted. You can still override any option or use it as a drop-in replacement where a regular s3.Bucket is expected. For CDK pipeline artifact buckets or CloudFront origins, use the bucketType option so encryption and resource policies are set appropriately.",
   "repository": {
     "type": "git",
     "url": "https://github.com/gammarers-aws-cdk-resources/aws-secure-bucket.git"
