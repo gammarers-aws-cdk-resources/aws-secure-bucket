@@ -3,7 +3,7 @@ import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { SecureBucket, SecureBucketType } from '../src';
 
-describe('SecureBucket Props Specific Testing', () => {
+describe('SecureBucket bucketType=DEPLOYMENT_PIPELINE_ARTIFACT_BUCKET Testing', () => {
 
   const customQualifier = 'custom9uo';
 
@@ -24,7 +24,7 @@ describe('SecureBucket Props Specific Testing', () => {
 
   const template = Template.fromStack(stack);
 
-  it('Should have bucket policy when bucketType is pipeline artifact and custom qualifier is defined', () => {
+  it('Should have bucket policy for custom qualifier deploy role', () => {
     template.hasResourceProperties('AWS::S3::BucketPolicy', {
       Bucket: Match.objectEquals({
         Ref: Match.stringLikeRegexp('SecureBucket'),
@@ -87,5 +87,5 @@ describe('SecureBucket Props Specific Testing', () => {
   it('Should match snapshot', () => {
     expect(template.toJSON()).toMatchSnapshot();
   });
-
 });
+

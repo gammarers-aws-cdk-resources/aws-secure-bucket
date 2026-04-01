@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`SecureBucket Default Parameters Testing Should match snapshot: default-secure-bucket 1`] = `
+exports[`SecureBucket bucketType=CLOUDFRONT_ORIGIN_BUCKET Testing Should match snapshot 1`] = `
 {
   "Parameters": {
     "BootstrapVersion": {
@@ -18,7 +18,7 @@ exports[`SecureBucket Default Parameters Testing Should match snapshot: default-
           "ServerSideEncryptionConfiguration": [
             {
               "ServerSideEncryptionByDefault": {
-                "SSEAlgorithm": "aws:kms",
+                "SSEAlgorithm": "AES256",
               },
             },
           ],
