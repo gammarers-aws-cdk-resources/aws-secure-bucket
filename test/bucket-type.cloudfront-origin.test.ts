@@ -1,15 +1,15 @@
 import { App, Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { SecureBucket } from '../src';
+import { SecureBucket, SecureBucketType } from '../src';
 
-describe('SecureBucket ObjectOwnership Testing', () => {
+describe('SecureBucket bucketType=CLOUDFRONT_ORIGIN_BUCKET Testing', () => {
 
-  const stack = new Stack(new App(), 'TestingStack');
+  const app = new App();
+  const stack = new Stack(app, 'TestingStack');
 
   const bucket = new SecureBucket(stack, 'SecureBucket', {
-    bucketName: 'example-secure-bucket',
-    objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_PREFERRED,
+    bucketType: SecureBucketType.CLOUDFRONT_ORIGIN_BUCKET,
   });
 
   it('Is Bucket', () => {
@@ -18,12 +18,14 @@ describe('SecureBucket ObjectOwnership Testing', () => {
 
   const template = Template.fromStack(stack);
 
-  it('Should match ownership', () => {
+  it('Should have encryption (S3 managed / AES256)', () => {
     template.hasResourceProperties('AWS::S3::Bucket', {
-      OwnershipControls: Match.objectEquals({
-        Rules: [
+      BucketEncryption: Match.objectEquals({
+        ServerSideEncryptionConfiguration: [
           {
-            ObjectOwnership: 'BucketOwnerPreferred',
+            ServerSideEncryptionByDefault: {
+              SSEAlgorithm: 'AES256',
+            },
           },
         ],
       }),
@@ -33,5 +35,5 @@ describe('SecureBucket ObjectOwnership Testing', () => {
   it('Should match snapshot', () => {
     expect(template.toJSON()).toMatchSnapshot();
   });
-
 });
+
