@@ -20,6 +20,11 @@ export const SecureBucketType = {
    * Select for the default bucket when not using a custom Qualifier.
    */
   DEFAULT_BUCKET: 'DefaultBucket',
+  /**
+   * Select when using this bucket as a centralized access log bucket
+   * for ALB, CloudFront, S3 server access logging, and similar producers.
+   */
+  ACCESS_LOG_BUCKET: 'AccessLogBucket',
 } as const;
 
 /** Bucket type: one of the {@link SecureBucketType} constant values. */
@@ -47,7 +52,7 @@ export class SecureBucket extends s3.Bucket {
       ...props,
       removalPolicy: RemovalPolicy.RETAIN,
       encryption: (() => {
-        if (bucketType === SecureBucketType.CLOUDFRONT_ORIGIN_BUCKET) {
+        if (bucketType === SecureBucketType.CLOUDFRONT_ORIGIN_BUCKET || bucketType === SecureBucketType.ACCESS_LOG_BUCKET) {
           return s3.BucketEncryption.S3_MANAGED;
         }
         return props?.encryption || s3.BucketEncryption.KMS_MANAGED;
@@ -97,6 +102,50 @@ export class SecureBucket extends s3.Bucket {
           ],
         }));
       }
+    }
+
+    if (bucketType === SecureBucketType.ACCESS_LOG_BUCKET) {
+      // Allow ALB / NLB log delivery to put objects (no read or list)
+      this.addToResourcePolicy(new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        principals: [
+          new iam.ServicePrincipal('logdelivery.elasticloadbalancing.amazonaws.com'),
+        ],
+        actions: [
+          's3:PutObject',
+        ],
+        resources: [
+          `${this.bucketArn}/AWSLogs/${account}/*`,
+        ],
+      }));
+
+      // Allow CloudFront standard logging (v2) to write logs
+      this.addToResourcePolicy(new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        principals: [
+          new iam.ServicePrincipal('delivery.logs.amazonaws.com'),
+        ],
+        actions: [
+          's3:PutObject',
+        ],
+        resources: [
+          `${this.bucketArn}/AWSLogs/${account}/*`,
+        ],
+      }));
+
+      // Allow S3 server access logging to write logs when required by configuration
+      this.addToResourcePolicy(new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        principals: [
+          new iam.ServicePrincipal('logging.s3.amazonaws.com'),
+        ],
+        actions: [
+          's3:PutObject',
+        ],
+        resources: [
+          `${this.bucketArn}/AWSLogs/${account}/*`,
+        ],
+      }));
     }
   }
 }
