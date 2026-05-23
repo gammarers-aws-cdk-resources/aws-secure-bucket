@@ -3,8 +3,6 @@
 name: upgrade-main
 on:
   workflow_dispatch: {}
-  schedule:
-    - cron: 0 0 * * 1
 jobs:
   upgrade:
     name: Upgrade
@@ -15,14 +13,13 @@ jobs:
       patch_created: ${{ steps.create_patch.outputs.patch_created }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v5
         with:
           ref: main
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v5
         with:
           node-version: 24.x
-          package-manager-cache: false
       - name: Install dependencies
         run: yarn install --check-files --frozen-lockfile
       - name: Upgrade dependencies
@@ -51,7 +48,7 @@ jobs:
     steps:
       - name: Generate token
         id: generate_token
-        uses: actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859
+        uses: actions/create-github-app-token@3ff1caaa28b64c9cc276ce0a02e2ff584f3900c5
         with:
           app-id: ${{ secrets.PROJEN_APP_ID }}
           private-key: ${{ secrets.PROJEN_APP_PRIVATE_KEY }}
@@ -59,7 +56,7 @@ jobs:
           permission-contents: write
           permission-workflows: write
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v5
         with:
           ref: main
       - name: Download patch
@@ -75,7 +72,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
       - name: Create Pull Request
         id: create-pr
-        uses: peter-evans/create-pull-request@v8
+        uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ steps.generate_token.outputs.token }}
           commit-message: |-

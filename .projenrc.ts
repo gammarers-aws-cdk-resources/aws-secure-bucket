@@ -13,7 +13,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
   repositoryUrl: 'https://github.com/gammarers-aws-cdk-resources/aws-secure-bucket.git',
   keywords: ['aws', 'cdk', 'aws-cdk', 's3', 'bucket', 'secure', 'kms'],
   majorVersion: 3,
-  releaseToNpm: true,
+  releaseToNpm: false,
   npmTrustedPublishing: true,
   npmAccess: javascript.NpmAccess.PUBLIC,
   minNodeVersion: '20.0.0',
@@ -21,7 +21,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
   depsUpgradeOptions: {
     workflowOptions: {
       labels: ['auto-approve', 'auto-merge'],
-      schedule: javascript.UpgradeDependenciesSchedule.WEEKLY,
+      schedule: javascript.UpgradeDependenciesSchedule.NEVER,
     },
   },
   githubOptions: {
